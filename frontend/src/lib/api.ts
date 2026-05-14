@@ -86,27 +86,11 @@ export const api = {
   me: () => request<{ user: User }>("/auth/me"),
   services: () => request<{ services: Service[] }>("/services"),
   service: (id: string) => request<{ service: Service }>(`/services/${id}`),
-  payMpesa: (input: { phone: string; amount: number; orderReference: string }) =>
-    request<{ paymentSessionId: string; status: string; message?: string; mode?: string }>("/payments/mpesa/stkpush", {
-      method: "POST",
-      body: JSON.stringify(input)
-    }),
-  createPayPalOrder: (input: { amount: number; orderReference: string }) =>
-    request<{ paypalOrderId?: string; id?: string; status: string }>("/payments/paypal/create-order", {
-      method: "POST",
-      body: JSON.stringify(input)
-    }),
-  capturePayPal: (input: { paypalOrderId: string; amount: number; orderReference: string }) =>
-    request<{ paymentSessionId: string; status: string }>("/payments/paypal/capture", {
-      method: "POST",
-      body: JSON.stringify(input)
-    }),
-  createOrder: (input: { serviceId: string; amount: number; location: string; scheduledDate: string; paymentSessionId: string }) =>
+  createOrder: (input: { serviceId: string; amount: number; location: string; scheduledDate: string }) =>
     request<{ order: Order }>("/orders", { method: "POST", body: JSON.stringify(input) }),
   myOrders: () => request<{ orders: Order[] }>("/orders/mine"),
   adminAnalytics: () => request<{ analytics: Analytics }>("/admin/analytics"),
   adminOrders: () => request<{ orders: Order[] }>("/admin/orders"),
-  adminPayments: () => request<{ payments: Payment[] }>("/admin/payments"),
   updateOrderStatus: (id: string, status: OrderStatus) =>
     request<{ order: Order }>(`/admin/orders/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) })
 };

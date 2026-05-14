@@ -8,8 +8,7 @@ const orderInput = z.object({
   serviceId: z.string().uuid(),
   amount: z.coerce.number().positive(),
   location: z.string().min(3),
-  scheduledDate: z.coerce.date(),
-  paymentSessionId: z.string().uuid()
+  scheduledDate: z.coerce.date()
 });
 
 export const ordersRoutes = Router();
@@ -23,13 +22,12 @@ ordersRoutes.post(
     const input = orderInput.parse(req.body);
     const service = await repository.getService(input.serviceId);
     if (!service) throw new HttpError(404, "Service not found");
-    const order = await repository.createOrderAfterPayment({
+    const order = await repository.createOrderRequest({
       userId: req.user.id,
       serviceId: input.serviceId,
       amount: input.amount,
       location: input.location,
-      scheduledDate: input.scheduledDate,
-      paymentSessionId: input.paymentSessionId
+      scheduledDate: input.scheduledDate
     });
     res.status(201).json({ order });
   })

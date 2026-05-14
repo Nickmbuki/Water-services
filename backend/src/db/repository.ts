@@ -85,7 +85,6 @@ export type CreateOrderInput = {
   amount: number;
   location: string;
   scheduledDate: Date;
-  paymentSessionId: string;
 };
 
 const serviceSeed: Service[] = [
@@ -95,7 +94,7 @@ const serviceSeed: Service[] = [
     description: "Scheduled bulk water bowser delivery for estates, construction sites, institutions, and businesses.",
     category: "delivery",
     basePrice: 6500,
-    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
+    imageUrl: "/images/water-bowser/water-bowser-clean.jpg"
   },
   {
     id: "22222222-2222-4222-8222-222222222222",
@@ -103,7 +102,7 @@ const serviceSeed: Service[] = [
     description: "Rapid response clean water supply across Nairobi and Kiambu for urgent shortages.",
     category: "delivery",
     basePrice: 7500,
-    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1578496479763-c21c718af028?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "33333333-3333-4333-8333-333333333333",
@@ -111,7 +110,7 @@ const serviceSeed: Service[] = [
     description: "Reliable domestic clean water delivery for homes, apartments, and residential compounds.",
     category: "delivery",
     basePrice: 2500,
-    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "44444444-4444-4444-8444-444444444444",
@@ -119,7 +118,7 @@ const serviceSeed: Service[] = [
     description: "Commercial water delivery plans for offices, hotels, factories, schools, and retail operations.",
     category: "delivery",
     basePrice: 5000,
-    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "55555555-5555-4555-8555-555555555555",
@@ -127,7 +126,7 @@ const serviceSeed: Service[] = [
     description: "Professional well drilling and digging with site assessment, lining guidance, water access planning, and handover.",
     category: "borehole",
     basePrice: 180000,
-    imageUrl: "/images/well-digging/well-digging-1.jpg"
+    imageUrl: "/images/services/well-drilling.jpg"
   },
   {
     id: "66666666-6666-4666-8666-666666666666",
@@ -135,7 +134,7 @@ const serviceSeed: Service[] = [
     description: "Well inspection, water level checks, pump diagnostics, safety checks, and technical reports.",
     category: "borehole",
     basePrice: 12000,
-    imageUrl: "/images/well-digging/well-digging-2.jpg"
+    imageUrl: "/images/services/well-inspection.jpg"
   },
   {
     id: "77777777-7777-4777-8777-777777777777",
@@ -143,7 +142,7 @@ const serviceSeed: Service[] = [
     description: "Submersible pump sizing, installation, control panels, cabling, and commissioning.",
     category: "borehole",
     basePrice: 45000,
-    imageUrl: "/images/well-digging/well-digging-2.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "88888888-8888-4888-8888-888888888888",
@@ -151,7 +150,7 @@ const serviceSeed: Service[] = [
     description: "Restoration of low-yield and blocked wells through cleaning, lining support, flushing, and pump upgrades.",
     category: "borehole",
     basePrice: 35000,
-    imageUrl: "/images/well-digging/well-digging-1.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1574263867128-a3d5c1b1deaa?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "99999999-9999-4999-8999-999999999999",
@@ -213,7 +212,7 @@ export interface Repository {
   updateService(id: string, input: Partial<Omit<Service, "id">>): Promise<Service | null>;
   createPendingPayment(input: Omit<PendingPayment, "id" | "createdAt">): Promise<PendingPayment>;
   getPendingPayment(id: string): Promise<PendingPayment | null>;
-  createOrderAfterPayment(input: CreateOrderInput): Promise<OrderWithDetails>;
+  createOrderRequest(input: CreateOrderInput): Promise<OrderWithDetails>;
   listOrdersByUser(userId: string): Promise<OrderWithDetails[]>;
   listOrders(): Promise<OrderWithDetails[]>;
   updateOrderStatus(id: string, status: OrderStatus): Promise<OrderWithDetails | null>;
@@ -297,36 +296,18 @@ class MemoryRepository implements Repository {
     return this.pendingPayments.find((payment) => payment.id === id) ?? null;
   }
 
-  async createOrderAfterPayment(input: CreateOrderInput) {
-    const pendingPayment = await this.getPendingPayment(input.paymentSessionId);
-    if (!pendingPayment || pendingPayment.status !== "paid") {
-      throw new Error("Payment has not been completed");
-    }
-    if (pendingPayment.amount !== input.amount) {
-      throw new Error("Payment amount does not match order amount");
-    }
+  async createOrderRequest(input: CreateOrderInput) {
     const order: Order = {
       id: uuid(),
       userId: input.userId,
       serviceId: input.serviceId,
       amount: input.amount,
-      status: "paid",
+      status: "pending",
       location: input.location,
       scheduledDate: input.scheduledDate,
       createdAt: new Date()
     };
-    const payment: Payment = {
-      id: uuid(),
-      orderId: order.id,
-      provider: pendingPayment.provider,
-      transactionId: pendingPayment.transactionId,
-      amount: pendingPayment.amount,
-      status: "paid",
-      createdAt: new Date()
-    };
     this.orders.push(order);
-    this.payments.push(payment);
-    this.pendingPayments = this.pendingPayments.filter((item) => item.id !== pendingPayment.id);
     return this.hydrateOrder(order);
   }
 
@@ -359,13 +340,12 @@ class MemoryRepository implements Repository {
   }
 
   async analytics() {
-    const paidPayments = this.payments.filter((payment) => payment.status === "paid");
     return {
       totalOrders: this.orders.length,
-      activeOrders: this.orders.filter((order) => order.status === "paid" || order.status === "in_progress").length,
+      activeOrders: this.orders.filter((order) => order.status === "pending" || order.status === "paid" || order.status === "in_progress").length,
       completedOrders: this.orders.filter((order) => order.status === "completed").length,
-      revenue: paidPayments.reduce((total, payment) => total + payment.amount, 0),
-      totalPayments: paidPayments.length,
+      revenue: this.orders.reduce((total, order) => total + order.amount, 0),
+      totalPayments: this.payments.length,
       services: this.services.length
     };
   }
@@ -478,34 +458,19 @@ class PostgresRepository implements Repository {
     return this.pendingPayments.get(id) ?? null;
   }
 
-  async createOrderAfterPayment(input: CreateOrderInput) {
+  async createOrderRequest(input: CreateOrderInput) {
     if (!db) throw new Error("Database is not configured");
-    const pendingPayment = await this.getPendingPayment(input.paymentSessionId);
-    if (!pendingPayment || pendingPayment.status !== "paid") {
-      throw new Error("Payment has not been completed");
-    }
-    if (pendingPayment.amount !== input.amount) {
-      throw new Error("Payment amount does not match order amount");
-    }
     const [order] = await db
       .insert(orders)
       .values({
         userId: input.userId,
         serviceId: input.serviceId,
         amount: String(input.amount),
-        status: "paid",
+        status: "pending",
         location: input.location,
         scheduledDate: input.scheduledDate
       })
       .returning();
-    await db.insert(payments).values({
-      orderId: order.id,
-      provider: pendingPayment.provider,
-      transactionId: pendingPayment.transactionId,
-      amount: String(pendingPayment.amount),
-      status: "paid"
-    });
-    this.pendingPayments.delete(pendingPayment.id);
     return this.getOrderDetails(order.id);
   }
 
@@ -535,15 +500,13 @@ class PostgresRepository implements Repository {
 
   async analytics() {
     const allOrders = await this.listOrders();
-    const allPayments = await this.listPayments();
     const allServices = await this.listServices();
-    const paidPayments = allPayments.filter((payment) => payment.status === "paid");
     return {
       totalOrders: allOrders.length,
-      activeOrders: allOrders.filter((order) => order.status === "paid" || order.status === "in_progress").length,
+      activeOrders: allOrders.filter((order) => order.status === "pending" || order.status === "paid" || order.status === "in_progress").length,
       completedOrders: allOrders.filter((order) => order.status === "completed").length,
-      revenue: paidPayments.reduce((total, payment) => total + payment.amount, 0),
-      totalPayments: paidPayments.length,
+      revenue: allOrders.reduce((total, order) => total + order.amount, 0),
+      totalPayments: 0,
       services: allServices.length
     };
   }

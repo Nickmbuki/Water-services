@@ -13,7 +13,6 @@ export const AdminDashboard = () => {
   const queryClient = useQueryClient();
   const analyticsQuery = useQuery({ queryKey: ["admin-analytics"], queryFn: () => api.adminAnalytics() });
   const ordersQuery = useQuery({ queryKey: ["admin-orders"], queryFn: () => api.adminOrders() });
-  const paymentsQuery = useQuery({ queryKey: ["admin-payments"], queryFn: () => api.adminPayments() });
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: OrderStatus }) => api.updateOrderStatus(id, status),
     onSuccess: () => {
@@ -24,7 +23,6 @@ export const AdminDashboard = () => {
 
   const analytics = analyticsQuery.data?.analytics;
   const orders = ordersQuery.data?.orders ?? [];
-  const payments = paymentsQuery.data?.payments ?? [];
 
   return (
     <main className="bg-muted/60 py-12">
@@ -39,7 +37,7 @@ export const AdminDashboard = () => {
             ["Orders", analytics?.totalOrders ?? 0, ClipboardList],
             ["Active", analytics?.activeOrders ?? 0, Truck],
             ["Completed", analytics?.completedOrders ?? 0, BarChart3],
-            ["Revenue", formatKes(analytics?.revenue ?? 0), Banknote],
+            ["Requested value", formatKes(analytics?.revenue ?? 0), Banknote],
             ["Services", analytics?.services ?? 0, Droplets]
           ] satisfies StatCard[]).map(([label, value, Icon]) => (
             <Card key={String(label)}>
@@ -52,7 +50,7 @@ export const AdminDashboard = () => {
           ))}
         </div>
 
-        <section className="mt-8 grid gap-8 xl:grid-cols-[1.4fr_0.8fr]">
+        <section className="mt-8">
           <Card>
             <CardHeader>
               <CardTitle>Orders and deliveries</CardTitle>
@@ -95,25 +93,6 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
               {orders.length === 0 ? <p className="py-6 text-muted-foreground">No orders yet.</p> : null}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Payments</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {payments.map((payment) => (
-                <div key={payment.id} className="rounded-md border border-border p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold uppercase">{payment.provider}</p>
-                    <span className="rounded-md bg-accent px-2 py-1 text-xs font-semibold text-white">{payment.status}</span>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{payment.transactionId}</p>
-                  <p className="mt-2 font-bold text-primary">{formatKes(payment.amount)}</p>
-                </div>
-              ))}
-              {payments.length === 0 ? <p className="text-muted-foreground">No payments yet.</p> : null}
             </CardContent>
           </Card>
         </section>

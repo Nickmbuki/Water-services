@@ -4,12 +4,12 @@ import { ArrowRight, Building2, CheckCircle2, Droplets, MapPin, Phone, Wrench } 
 import { Button } from "@/components/ui/button";
 
 const heroImage =
-  "/images/water-bowser/water-bowser-truck.jpg";
+  "/images/water-bowser/water-bowser-clean.jpg";
 const wellImage = "/images/well-digging/well-digging-1.jpg";
 const plumbingImage =
   "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=1400&q=80";
 const deliveryImage =
-  "/images/water-bowser/water-bowser-truck.jpg";
+  "/images/water-bowser/water-bowser-clean.jpg";
 
 const services = [
   {
@@ -65,7 +65,7 @@ export const HomePage = () => (
             </Link>
           </div>
           <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
-            {["Bulk bowser dispatch", "Custom M-Pesa payment", "Nairobi & Kiambu coverage"].map((item) => (
+            {["Bulk bowser dispatch", "Schedule online", "Nairobi & Kiambu coverage"].map((item) => (
               <motion.div
                 key={item}
                 initial={{ opacity: 0, y: 12 }}

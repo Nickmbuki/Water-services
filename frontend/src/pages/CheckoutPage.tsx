@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import { PaymentModal } from "@/components/payment/PaymentModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,19 +14,39 @@ import { Textarea } from "@/components/ui/textarea";
 const schema = z.object({
   location: z.string().min(3),
   scheduledDate: z.string().min(1),
-  amount: z.string().min(1, "Enter the amount you want to pay").refine((value) => Number(value) > 0, {
-    message: "Amount must be greater than zero"
+  amount: z.string().min(1, "Enter an estimated amount").refine((value) => Number(value) > 0, {
+    message: "Estimated amount must be greater than zero"
   }),
   notes: z.string().optional()
 });
 
 type FormValues = z.infer<typeof schema>;
 
+const locationSuggestions = [
+  "Westlands, Nairobi",
+  "Kilimani, Nairobi",
+  "Lavington, Nairobi",
+  "Karen, Nairobi",
+  "Langata, Nairobi",
+  "Runda, Nairobi",
+  "Kasarani, Nairobi",
+  "Embakasi, Nairobi",
+  "Industrial Area, Nairobi",
+  "Ruaka, Kiambu",
+  "Ruiru, Kiambu",
+  "Thika, Kiambu",
+  "Kikuyu, Kiambu",
+  "Kiambu Town",
+  "Juja, Kiambu",
+  "Limuru, Kiambu"
+];
+
 export const CheckoutPage = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [locationQuery, setLocationQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locationMessage, setLocationMessage] = useState<string | null>(null);
   const serviceQuery = useQuery({ queryKey: ["service", params.id], queryFn: () => api.service(params.id ?? ""), enabled: Boolean(params.id) });
   const service = serviceQuery.data?.service;
   const form = useForm<FormValues>({
@@ -36,25 +54,40 @@ export const CheckoutPage = () => {
     defaultValues: { location: "", scheduledDate: "", amount: "", notes: "" }
   });
 
-  const orderReference = useMemo(() => `WS-${Date.now()}`, []);
+  const filteredLocations = useMemo(() => {
+    if (!locationQuery.trim()) return locationSuggestions.slice(0, 6);
+    return locationSuggestions
+      .filter((location) => location.toLowerCase().includes(locationQuery.toLowerCase()))
+      .slice(0, 6);
+  }, [locationQuery]);
 
-  const submitDetails = form.handleSubmit(() => {
-    setPaymentOpen(true);
-  });
-
-  const createOrder = async (paymentSessionId: string) => {
-    const values = form.getValues();
+  const submitDetails = form.handleSubmit(async (values) => {
     if (!service) return;
     const amount = Number(values.amount);
     const order = await api.createOrder({
       serviceId: service.id,
       amount,
       location: values.notes ? `${values.location}. Notes: ${values.notes}` : values.location,
-      scheduledDate: new Date(values.scheduledDate).toISOString(),
-      paymentSessionId
+      scheduledDate: new Date(values.scheduledDate).toISOString()
     });
-    setPaymentOpen(false);
     navigate(`/account?created=${order.order.id}`);
+  });
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationMessage("Current location is not available in this browser.");
+      return;
+    }
+    setLocationMessage("Getting current location...");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = `Current location: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+        form.setValue("location", location, { shouldValidate: true });
+        setLocationQuery(location);
+        setLocationMessage("Current location added to the request.");
+      },
+      () => setLocationMessage("Could not get current location. Please allow location access or type your location.")
+    );
   };
 
   if (serviceQuery.isLoading) return <main className="container-shell py-16">Loading checkout...</main>;
@@ -66,29 +99,61 @@ export const CheckoutPage = () => {
         <Card>
           <CardHeader>
             <CardTitle>Schedule service details</CardTitle>
-            <p className="text-sm text-muted-foreground">Payment opens after these details are complete.</p>
+            <p className="text-sm text-muted-foreground">Submit your request and our team will confirm dispatch details.</p>
           </CardHeader>
           <CardContent>
             <form className="space-y-5" onSubmit={submitDetails}>
-              <div className="space-y-2">
+              <div className="relative space-y-2">
                 <Label>Delivery or service location</Label>
-                <Input placeholder="Estate, road, building, nearest landmark" {...form.register("location")} />
+                <Input
+                  placeholder="Search Nairobi or Kiambu locations"
+                  {...form.register("location", {
+                    onBlur: () => window.setTimeout(() => setShowSuggestions(false), 120),
+                    onChange: (event) => {
+                      setLocationQuery(event.target.value);
+                      setShowSuggestions(true);
+                    }
+                  })}
+                  onFocus={() => setShowSuggestions(true)}
+                />
+                {showSuggestions ? (
+                  <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-md border border-border bg-white shadow-soft">
+                    {filteredLocations.map((location) => (
+                      <button
+                        key={location}
+                        type="button"
+                        className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
+                        onClick={() => {
+                          form.setValue("location", location, { shouldValidate: true });
+                          setLocationQuery(location);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {location}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={useCurrentLocation}>
+                  Use current location
+                </Button>
+                {locationMessage ? <p className="text-xs text-muted-foreground">{locationMessage}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label>Scheduled date and time</Label>
                 <Input type="datetime-local" {...form.register("scheduledDate")} />
               </div>
               <div className="space-y-2">
-                <Label>Amount to pay</Label>
-                <Input type="number" min="1" step="1" placeholder="Enter custom amount in KES" {...form.register("amount")} />
-                <p className="text-xs text-muted-foreground">Pay based on the volume, distance, urgency, or service scope agreed with dispatch.</p>
+                <Label>Estimated budget</Label>
+                <Input type="number" min="1" step="1" placeholder="Enter estimated amount in KES" {...form.register("amount")} />
+                <p className="text-xs text-muted-foreground">Use this as a planning estimate. Final billing will be confirmed by dispatch.</p>
               </div>
               <div className="space-y-2">
                 <Label>Instructions</Label>
                 <Textarea placeholder="Tank size, access notes, emergency details, well notes..." {...form.register("notes")} />
               </div>
               <Button type="submit" size="lg">
-                Pay & Place Order
+                Submit Request
               </Button>
             </form>
           </CardContent>
@@ -101,29 +166,19 @@ export const CheckoutPage = () => {
               <h1 className="text-2xl font-bold">{service.name}</h1>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{service.description}</p>
               <div className="mt-5 rounded-md bg-primary/10 p-4">
-                <p className="text-sm text-primary">Custom amount</p>
-                <p className="mt-1 text-sm text-slate-700">Enter the agreed amount during checkout before payment.</p>
+                <p className="text-sm text-primary">Request first, confirmation next</p>
+                <p className="mt-1 text-sm text-slate-700">Our team will confirm pricing, timing, and dispatch details.</p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-5 text-sm leading-6 text-muted-foreground">
-              Payments support M-Pesa STK Push and PayPal Checkout. In local sandbox mode, payment is simulated and the
-              order is created immediately after payment confirmation.
+              For urgent bulk water delivery, include estate access notes, tank size, and any landmark that helps dispatch
+              reach you quickly.
             </CardContent>
           </Card>
         </aside>
       </div>
-
-      <PaymentModal
-        open={paymentOpen}
-        service={service}
-        amount={Number(form.getValues("amount"))}
-        orderReference={orderReference}
-        customerPhone={user?.phone ?? ""}
-        onClose={() => setPaymentOpen(false)}
-        onPaid={createOrder}
-      />
     </main>
   );
 };

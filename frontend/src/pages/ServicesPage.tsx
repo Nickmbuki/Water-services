@@ -39,14 +39,14 @@ const ServiceCard = ({ service }: { service: Service }) => {
             <Icon className="h-4 w-4" />
             {categoryLabels[service.category]}
           </span>
-          <span className="font-bold text-primary">Custom quote</span>
+          <span className="font-bold text-primary">Request quote</span>
         </div>
         <h2 className="text-xl font-semibold">{service.name}</h2>
         <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{service.description}</p>
         <Link to={`/checkout/${service.id}`}>
           <Button type="button" className="mt-5 w-full">
             <CalendarClock className="h-4 w-4" />
-            Schedule & Pay
+            Schedule Request
           </Button>
         </Link>
       </CardContent>
