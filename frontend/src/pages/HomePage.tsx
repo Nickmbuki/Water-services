@@ -3,13 +3,11 @@ import { motion } from "framer-motion";
 import { ArrowRight, Building2, CheckCircle2, Droplets, MapPin, Phone, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const heroImage =
-  "/images/water-bowser/water-bowser-clean.jpg";
+const heroImage = "/images/water-bowser/water-bowser-hero.jpg";
 const wellImage = "/images/well-digging/well-digging-1.jpg";
 const plumbingImage =
   "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=1400&q=80";
-const deliveryImage =
-  "/images/water-bowser/water-bowser-clean.jpg";
+const deliveryImage = "/images/water-bowser/water-bowser-bulk.jpg";
 
 const services = [
   {
@@ -164,8 +162,8 @@ export const HomePage = () => (
           <Wrench className="mb-4 h-10 w-10 text-secondary" />
           <h2 className="text-3xl font-bold">Plumbing services for domestic and commercial water systems</h2>
           <p className="mt-4 leading-7 text-slate-300">
-            From leak repair and tank installation to filtration systems and commercial pipework, the team keeps water
-            infrastructure reliable after delivery.
+            From leak repair and tank installation to commercial pipework and pump connections, the team keeps water
+            infrastructure reliable before and after delivery.
           </p>
         </div>
         <img className="h-[420px] w-full rounded-lg object-cover" src={plumbingImage} alt="Professional plumbing service" />
@@ -193,7 +191,7 @@ export const HomePage = () => (
           {[
             ["The tanker arrived on time and the team coordinated access with our caretaker.", "Apartment manager, Kilimani"],
             ["They inspected our well, replaced the pump, and restored supply within the week.", "School administrator, Kiambu"],
-            ["The plumbing team fixed recurring leaks and installed a filtration system for our office.", "Operations lead, Westlands"]
+            ["The plumbing team fixed recurring leaks and improved the water tank connections for our office.", "Operations lead, Westlands"]
           ].map(([quote, author]) => (
             <figure key={author} className="rounded-lg bg-white p-6 shadow-sm">
               <blockquote className="text-sm leading-6 text-slate-700">“{quote}”</blockquote>

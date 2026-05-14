@@ -7,7 +7,7 @@ import { asyncHandler, HttpError } from "../utils/http.js";
 const serviceInput = z.object({
   name: z.string().min(2),
   description: z.string().min(10),
-  category: z.enum(["delivery", "borehole", "plumbing", "purification"]),
+  category: z.enum(["delivery", "borehole", "plumbing"]),
   basePrice: z.coerce.number().positive(),
   imageUrl: z.string().url()
 });

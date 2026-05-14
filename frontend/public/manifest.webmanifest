@@ -1,0 +1,20 @@
+{
+  "name": "Nairobi Kiambu Water Services",
+  "short_name": "Water Services",
+  "description": "Order bulk water delivery, schedule well services, and request plumbing support across Nairobi and Kiambu.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "utilities", "productivity"]
+}

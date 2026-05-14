@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { db, hasDatabase } from "./client.js";
 import { orders, payments, services, users } from "./schema.js";
@@ -94,7 +94,7 @@ const serviceSeed: Service[] = [
     description: "Scheduled bulk water bowser delivery for estates, construction sites, institutions, and businesses.",
     category: "delivery",
     basePrice: 6500,
-    imageUrl: "/images/water-bowser/water-bowser-clean.jpg"
+    imageUrl: "/images/water-bowser/water-bowser-bulk.jpg"
   },
   {
     id: "22222222-2222-4222-8222-222222222222",
@@ -102,7 +102,7 @@ const serviceSeed: Service[] = [
     description: "Rapid response clean water supply across Nairobi and Kiambu for urgent shortages.",
     category: "delivery",
     basePrice: 7500,
-    imageUrl: "https://images.unsplash.com/photo-1578496479763-c21c718af028?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-emergency.jpg"
   },
   {
     id: "33333333-3333-4333-8333-333333333333",
@@ -110,7 +110,7 @@ const serviceSeed: Service[] = [
     description: "Reliable domestic clean water delivery for homes, apartments, and residential compounds.",
     category: "delivery",
     basePrice: 2500,
-    imageUrl: "https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-home.jpg"
   },
   {
     id: "44444444-4444-4444-8444-444444444444",
@@ -118,7 +118,7 @@ const serviceSeed: Service[] = [
     description: "Commercial water delivery plans for offices, hotels, factories, schools, and retail operations.",
     category: "delivery",
     basePrice: 5000,
-    imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-business.jpg"
   },
   {
     id: "55555555-5555-4555-8555-555555555555",
@@ -142,7 +142,7 @@ const serviceSeed: Service[] = [
     description: "Submersible pump sizing, installation, control panels, cabling, and commissioning.",
     category: "borehole",
     basePrice: 45000,
-    imageUrl: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "88888888-8888-4888-8888-888888888888",
@@ -182,17 +182,13 @@ const serviceSeed: Service[] = [
     description: "Water tank supply, base preparation, installation, fittings, float valves, and overflow systems.",
     category: "plumbing",
     basePrice: 10000,
-    imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
-    name: "Water Filtration Systems",
-    description: "Point-of-use and whole-building filtration systems for cleaner water and safer storage.",
-    category: "purification",
-    basePrice: 22000,
-    imageUrl: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80"
   }
 ];
+
+const retiredServiceIds = new Set(["dddddddd-dddd-4ddd-8ddd-dddddddddddd"]);
+
+const isVisibleService = (service: Service) => !retiredServiceIds.has(service.id);
 
 const toPublicUser = (user: User): PublicUser => {
   const { passwordHash: _passwordHash, ...safeUser } = user;
@@ -266,10 +262,11 @@ class MemoryRepository implements Repository {
   }
 
   async listServices() {
-    return [...this.services];
+    return this.services.filter(isVisibleService);
   }
 
   async getService(id: string) {
+    if (retiredServiceIds.has(id)) return null;
     return this.services.find((service) => service.id === id) ?? null;
   }
 
@@ -346,7 +343,7 @@ class MemoryRepository implements Repository {
       completedOrders: this.orders.filter((order) => order.status === "completed").length,
       revenue: this.orders.reduce((total, order) => total + order.amount, 0),
       totalPayments: this.payments.length,
-      services: this.services.length
+      services: this.services.filter(isVisibleService).length
     };
   }
 
@@ -421,10 +418,11 @@ class PostgresRepository implements Repository {
   async listServices() {
     if (!db) return [];
     const rows = await db.select().from(services);
-    return rows.map(this.mapService);
+    return rows.map(this.mapService).filter(isVisibleService);
   }
 
   async getService(id: string) {
+    if (retiredServiceIds.has(id)) return null;
     if (!db) return null;
     const service = await db.query.services.findFirst({ where: eq(services.id, id) });
     return service ? this.mapService(service) : null;

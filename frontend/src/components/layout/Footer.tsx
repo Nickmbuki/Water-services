@@ -11,8 +11,8 @@ export const Footer = () => (
           Nairobi Kiambu Water Services
         </div>
         <p className="max-w-md text-sm leading-6 text-slate-300">
-          Bulk water delivery, well drilling, plumbing, tank installation, and filtration systems for homes,
-          institutions, and businesses.
+          Bulk water delivery, well drilling, plumbing, tank installation, emergency supply, and scheduled service support
+          for homes, institutions, and businesses.
         </p>
       </div>
       <div>

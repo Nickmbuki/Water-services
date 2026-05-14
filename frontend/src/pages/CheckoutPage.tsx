@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -22,24 +22,109 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const locationSuggestions = [
+type LocationOption = {
+  label: string;
+  source: "popular" | "map";
+};
+
+type NominatimResult = {
+  display_name: string;
+  lat: string;
+  lon: string;
+};
+
+const popularLocations = [
+  "Nairobi CBD, Nairobi",
   "Westlands, Nairobi",
+  "Parklands, Nairobi",
+  "Highridge, Nairobi",
+  "Spring Valley, Nairobi",
   "Kilimani, Nairobi",
+  "Hurlingham, Nairobi",
   "Lavington, Nairobi",
+  "Kileleshwa, Nairobi",
+  "Upper Hill, Nairobi",
   "Karen, Nairobi",
+  "Hardy, Nairobi",
   "Langata, Nairobi",
   "Runda, Nairobi",
+  "Gigiri, Nairobi",
+  "Muthaiga, Nairobi",
+  "Ridgeways, Nairobi",
   "Kasarani, Nairobi",
+  "Roysambu, Nairobi",
+  "Zimmerman, Nairobi",
+  "Githurai 44, Nairobi",
+  "Githurai 45, Nairobi",
+  "Kahawa West, Nairobi",
+  "Kahawa Sukari, Kiambu",
+  "Kahawa Wendani, Kiambu",
+  "Ruaraka, Nairobi",
   "Embakasi, Nairobi",
+  "Donholm, Nairobi",
+  "Umoja, Nairobi",
+  "Buruburu, Nairobi",
+  "Komarock, Nairobi",
+  "Kayole, Nairobi",
+  "Ruai, Nairobi",
+  "Utawala, Nairobi",
+  "Njiru, Nairobi",
   "Industrial Area, Nairobi",
+  "South B, Nairobi",
+  "South C, Nairobi",
+  "Makadara, Nairobi",
+  "Eastleigh, Nairobi",
+  "Pangani, Nairobi",
+  "Ngara, Nairobi",
+  "Kariobangi, Nairobi",
+  "Dandora, Nairobi",
+  "Baba Dogo, Nairobi",
+  "Kiambu Town, Kiambu",
   "Ruaka, Kiambu",
+  "Ndenderu, Kiambu",
+  "Gachie, Kiambu",
+  "Banana, Kiambu",
+  "Karura, Kiambu",
+  "Kiambaa, Kiambu",
+  "Githunguri, Kiambu",
   "Ruiru, Kiambu",
+  "Membley, Kiambu",
+  "Kamakis, Kiambu",
+  "Tatu City, Kiambu",
   "Thika, Kiambu",
-  "Kikuyu, Kiambu",
-  "Kiambu Town",
   "Juja, Kiambu",
-  "Limuru, Kiambu"
+  "Kenyatta Road, Kiambu",
+  "Kikuyu, Kiambu",
+  "Kinoo, Kiambu",
+  "Uthiru, Kiambu",
+  "Kabete, Kiambu",
+  "Wangige, Kiambu",
+  "Muguga, Kiambu",
+  "Limuru, Kiambu",
+  "Tigoni, Kiambu",
+  "Redhill, Kiambu",
+  "Rosslyn, Kiambu",
+  "Two Rivers, Kiambu",
+  "Karuri, Kiambu",
+  "Ndumberi, Kiambu",
+  "Tinganga, Kiambu",
+  "Gatundu, Kiambu",
+  "Kimunyu, Kiambu",
+  "Lari, Kiambu",
+  "Kijabe, Kiambu"
 ];
+
+const asLocation = (label: string, source: LocationOption["source"]): LocationOption => ({ label, source });
+
+const uniqueLocations = (locations: LocationOption[]) => {
+  const seen = new Set<string>();
+  return locations.filter((location) => {
+    const key = location.label.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
 
 export const CheckoutPage = () => {
   const params = useParams();
@@ -47,6 +132,9 @@ export const CheckoutPage = () => {
   const [locationQuery, setLocationQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [locationMessage, setLocationMessage] = useState<string | null>(null);
+  const [mapLocations, setMapLocations] = useState<LocationOption[]>([]);
+  const [searchingLocations, setSearchingLocations] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const serviceQuery = useQuery({ queryKey: ["service", params.id], queryFn: () => api.service(params.id ?? ""), enabled: Boolean(params.id) });
   const service = serviceQuery.data?.service;
   const form = useForm<FormValues>({
@@ -54,12 +142,56 @@ export const CheckoutPage = () => {
     defaultValues: { location: "", scheduledDate: "", amount: "", notes: "" }
   });
 
-  const filteredLocations = useMemo(() => {
-    if (!locationQuery.trim()) return locationSuggestions.slice(0, 6);
-    return locationSuggestions
-      .filter((location) => location.toLowerCase().includes(locationQuery.toLowerCase()))
-      .slice(0, 6);
+  useEffect(() => {
+    const query = locationQuery.trim();
+    if (query.length < 3) {
+      setMapLocations([]);
+      setSearchingLocations(false);
+      setLocationError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchingLocations(true);
+      setLocationError(null);
+      try {
+        const url = new URL("https://nominatim.openstreetmap.org/search");
+        url.searchParams.set("format", "json");
+        url.searchParams.set("addressdetails", "1");
+        url.searchParams.set("limit", "8");
+        url.searchParams.set("countrycodes", "ke");
+        url.searchParams.set("q", `${query}, Nairobi Kiambu Kenya`);
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Location search failed");
+        const results = (await response.json()) as NominatimResult[];
+        setMapLocations(
+          results
+            .filter((result) => result.display_name.toLowerCase().includes("kenya"))
+            .map((result) => asLocation(result.display_name, "map"))
+        );
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setLocationError("Map search is temporarily unavailable. Showing common service areas.");
+        }
+      } finally {
+        setSearchingLocations(false);
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, [locationQuery]);
+
+  const filteredLocations = useMemo(() => {
+    const query = locationQuery.trim().toLowerCase();
+    const popularMatches = popularLocations
+      .filter((location) => !query || location.toLowerCase().includes(query))
+      .map((location) => asLocation(location, "popular"));
+    return uniqueLocations([...mapLocations, ...popularMatches]).slice(0, 10);
+  }, [locationQuery, mapLocations]);
 
   const submitDetails = form.handleSubmit(async (values) => {
     if (!service) return;
@@ -80,8 +212,24 @@ export const CheckoutPage = () => {
     }
     setLocationMessage("Getting current location...");
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const location = `Current location: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+      async (position) => {
+        const coordinates = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+        let location = `Current location: ${coordinates}`;
+        try {
+          const url = new URL("https://nominatim.openstreetmap.org/reverse");
+          url.searchParams.set("format", "json");
+          url.searchParams.set("lat", String(position.coords.latitude));
+          url.searchParams.set("lon", String(position.coords.longitude));
+          const response = await fetch(url);
+          if (response.ok) {
+            const result = (await response.json()) as Partial<NominatimResult>;
+            if (result.display_name) {
+              location = `${result.display_name} (${coordinates})`;
+            }
+          }
+        } catch {
+          location = `Current location: ${coordinates}`;
+        }
         form.setValue("location", location, { shouldValidate: true });
         setLocationQuery(location);
         setLocationMessage("Current location added to the request.");
@@ -106,9 +254,9 @@ export const CheckoutPage = () => {
               <div className="relative space-y-2">
                 <Label>Delivery or service location</Label>
                 <Input
-                  placeholder="Search Nairobi or Kiambu locations"
+                  placeholder="Search Nairobi, Kiambu, estate, road, landmark..."
                   {...form.register("location", {
-                    onBlur: () => window.setTimeout(() => setShowSuggestions(false), 120),
+                    onBlur: () => window.setTimeout(() => setShowSuggestions(false), 160),
                     onChange: (event) => {
                       setLocationQuery(event.target.value);
                       setShowSuggestions(true);
@@ -117,27 +265,35 @@ export const CheckoutPage = () => {
                   onFocus={() => setShowSuggestions(true)}
                 />
                 {showSuggestions ? (
-                  <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-md border border-border bg-white shadow-soft">
+                  <div className="absolute z-20 mt-1 max-h-80 w-full overflow-auto rounded-md border border-border bg-white shadow-soft">
+                    {searchingLocations ? <div className="px-3 py-2 text-sm text-muted-foreground">Searching map locations...</div> : null}
                     {filteredLocations.map((location) => (
                       <button
-                        key={location}
+                        key={`${location.source}-${location.label}`}
                         type="button"
-                        className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
+                        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-muted"
                         onClick={() => {
-                          form.setValue("location", location, { shouldValidate: true });
-                          setLocationQuery(location);
+                          form.setValue("location", location.label, { shouldValidate: true });
+                          setLocationQuery(location.label);
                           setShowSuggestions(false);
                         }}
                       >
-                        {location}
+                        <span>{location.label}</span>
+                        <span className="shrink-0 rounded-md bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">
+                          {location.source === "map" ? "Map" : "Area"}
+                        </span>
                       </button>
                     ))}
+                    {!searchingLocations && filteredLocations.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">Keep typing, or use current location.</div>
+                    ) : null}
                   </div>
                 ) : null}
                 <Button type="button" variant="outline" size="sm" className="mt-2" onClick={useCurrentLocation}>
                   Use current location
                 </Button>
                 {locationMessage ? <p className="text-xs text-muted-foreground">{locationMessage}</p> : null}
+                {locationError ? <p className="text-xs text-muted-foreground">{locationError}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label>Scheduled date and time</Label>

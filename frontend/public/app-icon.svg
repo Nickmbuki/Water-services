@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Water services app icon">
+  <rect width="512" height="512" rx="96" fill="#0f766e"/>
+  <path d="M111 308c0-98 145-242 145-242s145 144 145 242c0 80-65 145-145 145s-145-65-145-145Z" fill="#67e8f9"/>
+  <path d="M154 314c0 56 46 102 102 102 43 0 79-26 95-63-22 18-55 29-95 29-51 0-86-23-102-68Z" fill="#ffffff" opacity=".72"/>
+  <path d="M146 247h220c21 0 38 17 38 38v56H108v-56c0-21 17-38 38-38Z" fill="#083344"/>
+  <path d="M154 285h204v44H154z" fill="#22d3ee"/>
+  <circle cx="174" cy="356" r="30" fill="#020617"/>
+  <circle cx="338" cy="356" r="30" fill="#020617"/>
+  <circle cx="174" cy="356" r="12" fill="#94a3b8"/>
+  <circle cx="338" cy="356" r="12" fill="#94a3b8"/>
+</svg>
