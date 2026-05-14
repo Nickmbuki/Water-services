@@ -22,9 +22,15 @@ export const LoginPage = () => {
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { email: "", password: "" } });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = await api.login(values);
-    login(result.token, result.user);
-    navigate(result.user.role === "admin" ? "/admin" : "/services");
+    try {
+      const result = await api.login(values);
+      login(result.token, result.user);
+      navigate(result.user.role === "admin" ? "/admin" : "/services");
+    } catch (error) {
+      form.setError("root", {
+        message: error instanceof Error ? error.message : "Login failed. Please try again."
+      });
+    }
   });
 
   return (
@@ -32,7 +38,7 @@ export const LoginPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login</CardTitle>
-          <p className="text-sm text-muted-foreground">Use your account or admin@waterservices.co.ke / Admin12345!</p>
+          <p className="text-sm text-muted-foreground">Use your customer or staff account to continue.</p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={onSubmit}>

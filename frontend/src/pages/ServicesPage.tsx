@@ -10,7 +10,7 @@ import { formatKes } from "@/lib/utils";
 const categories: Array<{ id: "all" | ServiceCategory; label: string }> = [
   { id: "all", label: "All" },
   { id: "delivery", label: "Water delivery" },
-  { id: "borehole", label: "Borehole" },
+  { id: "borehole", label: "Well services" },
   { id: "plumbing", label: "Plumbing" },
   { id: "purification", label: "Filtration" }
 ];
@@ -22,6 +22,13 @@ const icons = {
   purification: Filter
 };
 
+const categoryLabels: Record<ServiceCategory, string> = {
+  delivery: "delivery",
+  borehole: "well service",
+  plumbing: "plumbing",
+  purification: "filtration"
+};
+
 const ServiceCard = ({ service }: { service: Service }) => {
   const Icon = icons[service.category];
   return (
@@ -31,7 +38,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
         <div className="mb-3 flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-2 rounded-md bg-muted px-3 py-1 text-xs font-semibold capitalize text-primary">
             <Icon className="h-4 w-4" />
-            {service.category}
+            {categoryLabels[service.category]}
           </span>
           <span className="font-bold text-primary">{formatKes(service.basePrice)}</span>
         </div>
@@ -68,7 +75,7 @@ export const ServicesPage = () => {
             </p>
             <h1 className="mt-2 text-4xl font-bold">Choose a water service</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Select delivery, borehole, plumbing, tank installation, or water filtration services. Payment is completed
+              Select bulk water delivery, well drilling, plumbing, tank installation, or water filtration services. Payment is completed
               before the order is created.
             </p>
           </div>

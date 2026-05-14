@@ -123,35 +123,35 @@ const serviceSeed: Service[] = [
   },
   {
     id: "55555555-5555-4555-8555-555555555555",
-    name: "Borehole Drilling",
-    description: "Professional borehole drilling with site assessment, casing, test pumping, and handover.",
+    name: "Well Drilling",
+    description: "Professional well drilling and digging with site assessment, lining guidance, water access planning, and handover.",
     category: "borehole",
     basePrice: 180000,
-    imageUrl: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/well-digging/well-digging-1.jpg"
   },
   {
     id: "66666666-6666-4666-8666-666666666666",
-    name: "Borehole Inspection",
-    description: "Camera inspection, yield checks, pump diagnostics, and technical reports for borehole systems.",
+    name: "Well Inspection",
+    description: "Well inspection, water level checks, pump diagnostics, safety checks, and technical reports.",
     category: "borehole",
     basePrice: 12000,
-    imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/well-digging/well-digging-2.jpg"
   },
   {
     id: "77777777-7777-4777-8777-777777777777",
-    name: "Borehole Pump Installation",
+    name: "Well Pump Installation",
     description: "Submersible pump sizing, installation, control panels, cabling, and commissioning.",
     category: "borehole",
     basePrice: 45000,
-    imageUrl: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/well-digging/well-digging-2.jpg"
   },
   {
     id: "88888888-8888-4888-8888-888888888888",
-    name: "Borehole Rehabilitation",
-    description: "Restoration of low-yield and blocked boreholes through cleaning, flushing, and pump upgrades.",
+    name: "Well Rehabilitation",
+    description: "Restoration of low-yield and blocked wells through cleaning, lining support, flushing, and pump upgrades.",
     category: "borehole",
     basePrice: 35000,
-    imageUrl: "https://images.unsplash.com/photo-1574263867128-a3d5c1b1deaa?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/well-digging/well-digging-1.jpg"
   },
   {
     id: "99999999-9999-4999-8999-999999999999",
@@ -385,6 +385,17 @@ class PostgresRepository implements Repository {
       const existing = await db.query.services.findFirst({ where: eq(services.id, service.id) });
       if (!existing) {
         await db.insert(services).values({ ...service, basePrice: String(service.basePrice) });
+      } else {
+        await db
+          .update(services)
+          .set({
+            name: service.name,
+            description: service.description,
+            category: service.category,
+            basePrice: String(service.basePrice),
+            imageUrl: service.imageUrl
+          })
+          .where(eq(services.id, service.id));
       }
     }
     const existingAdmin = await this.findUserByEmail(env.adminEmail);

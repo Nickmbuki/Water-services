@@ -27,9 +27,15 @@ export const RegisterPage = () => {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = await api.register(values);
-    login(result.token, result.user);
-    navigate("/services");
+    try {
+      const result = await api.register(values);
+      login(result.token, result.user);
+      navigate("/services");
+    } catch (error) {
+      form.setError("root", {
+        message: error instanceof Error ? error.message : "Registration failed. Please try again."
+      });
+    }
   });
 
   return (
@@ -37,7 +43,7 @@ export const RegisterPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create customer account</CardTitle>
-          <p className="text-sm text-muted-foreground">Order water, schedule borehole work, and track jobs online.</p>
+          <p className="text-sm text-muted-foreground">Order bulk water, schedule well work, and track jobs online.</p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={onSubmit}>
@@ -57,6 +63,7 @@ export const RegisterPage = () => {
               <Label>Password</Label>
               <Input type="password" {...form.register("password")} />
             </div>
+            {form.formState.errors.root ? <p className="text-sm text-red-600">{form.formState.errors.root.message}</p> : null}
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               Register
             </Button>
