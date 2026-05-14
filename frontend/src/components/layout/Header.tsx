@@ -22,7 +22,7 @@ export const Header = () => {
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
           <NavLink to="/services" className={navLink}>
-            Services
+            Order Water
           </NavLink>
           <NavLink to="/account" className={navLink}>
             Orders

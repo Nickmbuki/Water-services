@@ -29,7 +29,7 @@ export const AdminDashboard = () => {
       <div className="container-shell">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Admin operations</p>
-          <h1 className="mt-2 text-4xl font-bold">Water services dashboard</h1>
+          <h1 className="mt-2 text-4xl font-bold">Bulk water delivery dashboard</h1>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -38,7 +38,7 @@ export const AdminDashboard = () => {
             ["Active", analytics?.activeOrders ?? 0, Truck],
             ["Completed", analytics?.completedOrders ?? 0, BarChart3],
             ["Requested value", formatKes(analytics?.revenue ?? 0), Banknote],
-            ["Services", analytics?.services ?? 0, Droplets]
+            ["Delivery service", analytics?.services ?? 0, Droplets]
           ] satisfies StatCard[]).map(([label, value, Icon]) => (
             <Card key={String(label)}>
               <CardContent className="p-5">

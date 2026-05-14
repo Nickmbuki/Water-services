@@ -1,6 +1,6 @@
 # Nairobi Kiambu Water Services Platform
 
-Production-ready local platform for clean water delivery, borehole services, plumbing, filtration, payments, order tracking, and admin operations.
+Production-ready local platform for bulk water bowser delivery, order tracking, and admin operations.
 
 ## Structure
 
@@ -43,13 +43,11 @@ Copy `.env.example` in each app when deploying. If `DATABASE_URL` is not set, th
 - Service areas: Nairobi County, Kiambu County
 - Phone: `0782 602171`, `0797 608086`
 
-## Payment Flow
+## Ordering Flow
 
-Orders are created only after payment success:
+The platform is focused on one service: bulk clean water delivery by bowser truck.
 
-1. Customer selects service.
-2. Customer enters service location and schedule.
-3. Customer clicks `Pay & Place Order`.
-4. Payment modal opens.
-5. Customer chooses M-Pesa STK Push or PayPal Checkout.
-6. Successful payment creates the order and payment record.
+1. Customer opens `Order Water`.
+2. Customer enters delivery location, schedule, estimated budget, and access notes.
+3. Customer submits the request.
+4. The admin dashboard receives the delivery request for dispatch follow-up.

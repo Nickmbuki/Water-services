@@ -1,37 +1,29 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Building2, CheckCircle2, Droplets, MapPin, Phone, Wrench } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, Droplets, MapPin, Phone, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const heroImage = "/images/water-bowser/water-bowser-hero.jpg";
-const wellImage = "/images/well-digging/well-digging-1.jpg";
-const plumbingImage =
-  "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=1400&q=80";
 const deliveryImage = "/images/water-bowser/water-bowser-bulk.jpg";
+const detailImage = "/images/water-bowser/water-bowser-business.jpg";
 
-const services = [
-  {
-    title: "Water Delivery",
-    image: deliveryImage,
-    items: ["Water tanker bulk delivery", "Emergency water supply", "Home delivery", "Business delivery"]
-  },
-  {
-    title: "Well Services",
-    image: wellImage,
-    items: ["Well drilling", "Well inspection", "Pump installation", "Well rehabilitation"]
-  },
-  {
-    title: "Plumbing Services",
-    image: plumbingImage,
-    items: ["Home plumbing", "Commercial plumbing", "Leak repair", "Tank installation"]
-  }
+const stats = [
+  ["Nairobi", "Physical office and dispatch coordination"],
+  ["Nairobi & Kiambu", "Focused delivery coverage"],
+  ["0782 602171", "Primary customer line"]
+];
+
+const steps = [
+  ["Request", "Enter your location, schedule, and estimated delivery budget."],
+  ["Confirm", "Dispatch calls to confirm access, timing, and final pricing."],
+  ["Deliver", "A water bowser truck delivers clean bulk water to your tank or site."]
 ];
 
 export const HomePage = () => (
   <main>
     <section className="relative min-h-[82vh] overflow-hidden">
-      <img className="absolute inset-0 h-full w-full object-cover" src={heroImage} alt="Water bowser truck delivering bulk clean water" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.82),rgba(15,23,42,0.48),rgba(2,6,23,0.16))]" />
+      <img className="absolute inset-0 h-full w-full object-cover" src={heroImage} alt="Clean water bowser truck" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.86),rgba(15,23,42,0.5),rgba(2,6,23,0.14))]" />
       <div className="container-shell relative flex min-h-[82vh] items-center pb-16 pt-24">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -40,14 +32,14 @@ export const HomePage = () => (
           className="max-w-3xl text-white"
         >
           <div className="mb-5 inline-flex items-center gap-2 rounded-md bg-white/12 px-3 py-2 text-sm font-semibold backdrop-blur">
-            <MapPin className="h-4 w-4 text-secondary" />
-            Nairobi County and Kiambu County
+            <Truck className="h-4 w-4 text-secondary" />
+            Bulk water bowser delivery
           </div>
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-            Clean Water & Well Solutions Across Nairobi & Kiambu
+            Clean Bulk Water Delivery Across Nairobi & Kiambu
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-100">
-            Reliable bulk water delivery, well drilling and plumbing services.
+            Reliable water bowser truck delivery for homes, estates, apartments, businesses, institutions, and sites.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/services">
@@ -56,46 +48,29 @@ export const HomePage = () => (
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-            <Link to="/services">
+            <a href="tel:0782602171">
               <Button size="lg" variant="secondary" type="button">
-                Request Service
+                <Phone className="h-5 w-5" />
+                Call 0782 602171
               </Button>
-            </Link>
-          </div>
-          <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
-            {["Bulk bowser dispatch", "Schedule online", "Nairobi & Kiambu coverage"].map((item) => (
-              <motion.div
-                key={item}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.2 }}
-                className="rounded-md border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold backdrop-blur"
-              >
-                {item}
-              </motion.div>
-            ))}
+            </a>
           </div>
         </motion.div>
       </div>
     </section>
 
-    <section className="bg-white py-14">
-      <div className="container-shell grid gap-5 md:grid-cols-3">
-        {[
-          ["24/7 Emergency Supply", "Fast response when your home, business, or site runs dry."],
-          ["Certified Well Teams", "Well drilling, inspection, rehabilitation, and pump installation."],
-          ["Nairobi Office Support", "Call 0782 602171 or 0797 608086 for dispatch coordination."]
-        ].map(([title, text], index) => (
+    <section className="bg-white py-12">
+      <div className="container-shell grid gap-4 md:grid-cols-3">
+        {stats.map(([title, text], index) => (
           <motion.div
             key={title}
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.45, delay: index * 0.08 }}
-            className="rounded-lg border border-border p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+            transition={{ duration: 0.4, delay: index * 0.06 }}
+            className="rounded-lg border border-border p-5 shadow-sm"
           >
-            <CheckCircle2 className="mb-4 h-7 w-7 text-accent" />
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <p className="text-xl font-bold text-primary">{title}</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
           </motion.div>
         ))}
@@ -103,98 +78,92 @@ export const HomePage = () => (
     </section>
 
     <section className="bg-muted py-16">
-      <div className="container-shell">
-        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">Core services</p>
-            <h2 className="mt-2 text-3xl font-bold">Complete clean water services</h2>
+      <div className="container-shell grid gap-10 lg:grid-cols-2 lg:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">One simple service</p>
+          <h2 className="mt-2 text-3xl font-bold">Bulk water delivered by bowser truck</h2>
+          <p className="mt-4 leading-7 text-muted-foreground">
+            The website is focused on a single customer action: request a clean bulk water delivery. Customers can schedule
+            a date and time, search or send their location, add access notes, and submit the request for dispatch follow-up.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {["Domestic tanks", "Apartments and estates", "Business premises", "Construction sites"].map((item) => (
+              <div key={item} className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                <CheckCircle2 className="h-4 w-4 text-accent" />
+                {item}
+              </div>
+            ))}
           </div>
-          <Link className="font-semibold text-primary" to="/services">
-            Browse all services
-          </Link>
+        </div>
+        <img className="h-[420px] w-full rounded-lg object-cover shadow-soft" src={deliveryImage} alt="Water bowser delivery truck" />
+      </div>
+    </section>
+
+    <section className="bg-white py-16">
+      <div className="container-shell">
+        <div className="mb-8 max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">How it works</p>
+          <h2 className="mt-2 text-3xl font-bold">Fast request, clear confirmation</h2>
         </div>
         <div className="grid gap-5 md:grid-cols-3">
-          {services.map((service, index) => (
+          {steps.map(([title, text], index) => (
             <motion.article
-              key={service.title}
-              initial={{ opacity: 0, y: 24 }}
+              key={title}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.45, delay: index * 0.08 }}
-              className="overflow-hidden rounded-lg border border-border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              className="rounded-lg border border-border bg-white p-6 shadow-sm"
             >
-              <img className="h-56 w-full object-cover" src={service.image} alt={service.title} />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold">{service.title}</h3>
-                <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                  {service.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-accent" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+              <div className="mb-5 grid h-12 w-12 place-items-center rounded-md bg-primary text-lg font-bold text-white">
+                {index + 1}
               </div>
+              <h3 className="text-xl font-semibold">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
             </motion.article>
           ))}
         </div>
       </div>
     </section>
 
-    <section className="bg-white py-16">
-      <div className="container-shell grid gap-10 lg:grid-cols-2 lg:items-center">
-        <img className="h-[420px] w-full rounded-lg object-cover" src={wellImage} alt="Well digging and drilling work" />
-        <div>
-          <Droplets className="mb-4 h-10 w-10 text-primary" />
-          <h2 className="text-3xl font-bold">Well drilling, inspection, pumps, and rehabilitation</h2>
-          <p className="mt-4 leading-7 text-muted-foreground">
-            Technical teams handle site surveys, well digging and drilling coordination, safety checks, water level
-            assessment, pump sizing, installation, and rehabilitation for homes, institutions, farms, and commercial
-            sites.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <section className="bg-slate-950 py-16 text-white">
       <div className="container-shell grid gap-10 lg:grid-cols-2 lg:items-center">
+        <img className="h-[420px] w-full rounded-lg object-cover" src={detailImage} alt="Water bowser truck delivery detail" />
         <div>
-          <Wrench className="mb-4 h-10 w-10 text-secondary" />
-          <h2 className="text-3xl font-bold">Plumbing services for domestic and commercial water systems</h2>
+          <Droplets className="mb-4 h-10 w-10 text-secondary" />
+          <h2 className="text-3xl font-bold">Built for reliable bulk water delivery</h2>
           <p className="mt-4 leading-7 text-slate-300">
-            From leak repair and tank installation to commercial pipework and pump connections, the team keeps water
-            infrastructure reliable before and after delivery.
+            The ordering flow keeps the essentials visible: delivery location, delivery time, customer contact, notes for
+            dispatch, and order tracking after submission.
           </p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {[
+              [Clock, "Scheduled delivery windows"],
+              [MapPin, "Location search and current location"],
+              [ShieldCheck, "Admin order management"],
+              [Truck, "Focused tanker dispatch"]
+            ].map(([Icon, text]) => (
+              <div key={String(text)} className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4">
+                <Icon className="h-5 w-5 text-secondary" />
+                <span className="text-sm font-semibold">{String(text)}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <img className="h-[420px] w-full rounded-lg object-cover" src={plumbingImage} alt="Professional plumbing service" />
       </div>
     </section>
 
     <section className="bg-white py-16">
-      <div className="container-shell grid gap-10 lg:grid-cols-2 lg:items-center">
-        <img className="h-[420px] w-full rounded-lg object-cover" src={deliveryImage} alt="Water bowser truck delivery" />
-        <div>
-          <Building2 className="mb-4 h-10 w-10 text-accent" />
-          <h2 className="text-3xl font-bold">Bulk water bowser delivery for homes, businesses, and sites</h2>
-          <p className="mt-4 leading-7 text-muted-foreground">
-            Schedule water bowser truck deliveries for domestic tanks, construction sites, apartments, institutions, and
-            commercial operations across Nairobi County and Kiambu County.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section className="bg-muted py-16">
       <div className="container-shell">
-        <h2 className="text-3xl font-bold">Trusted by property managers, families, and businesses</h2>
+        <h2 className="text-3xl font-bold">Trusted for clean water supply</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {[
-            ["The tanker arrived on time and the team coordinated access with our caretaker.", "Apartment manager, Kilimani"],
-            ["They inspected our well, replaced the pump, and restored supply within the week.", "School administrator, Kiambu"],
-            ["The plumbing team fixed recurring leaks and improved the water tank connections for our office.", "Operations lead, Westlands"]
+            ["The bowser arrived on time and the team coordinated access with our caretaker.", "Apartment manager, Kilimani"],
+            ["Clear communication, fair confirmation, and reliable delivery to our site.", "Site supervisor, Ruiru"],
+            ["Simple ordering and quick dispatch support when our tanks were low.", "Homeowner, Kiambu"]
           ].map(([quote, author]) => (
-            <figure key={author} className="rounded-lg bg-white p-6 shadow-sm">
-              <blockquote className="text-sm leading-6 text-slate-700">“{quote}”</blockquote>
+            <figure key={author} className="rounded-lg bg-muted p-6">
+              <blockquote className="text-sm leading-6 text-slate-700">"{quote}"</blockquote>
               <figcaption className="mt-4 text-sm font-semibold text-primary">{author}</figcaption>
             </figure>
           ))}
@@ -205,16 +174,15 @@ export const HomePage = () => (
     <section className="bg-primary py-14 text-white">
       <div className="container-shell flex flex-col justify-between gap-6 md:flex-row md:items-center">
         <div>
-          <h2 className="text-3xl font-bold">Contact dispatch and service scheduling</h2>
+          <h2 className="text-3xl font-bold">Request bulk water delivery today</h2>
           <p className="mt-2 text-white/85">Physical office: Nairobi, Kenya. Serving Nairobi County and Kiambu County.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <a href="tel:0782602171">
+          <Link to="/services">
             <Button type="button" variant="secondary">
-              <Phone className="h-4 w-4" />
-              0782 602171
+              Order Water
             </Button>
-          </a>
+          </Link>
           <a href="tel:0797608086">
             <Button type="button" variant="outline" className="bg-white text-primary hover:bg-muted">
               <Phone className="h-4 w-4" />

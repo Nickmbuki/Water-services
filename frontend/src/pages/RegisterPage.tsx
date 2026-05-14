@@ -43,7 +43,7 @@ export const RegisterPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create customer account</CardTitle>
-          <p className="text-sm text-muted-foreground">Order bulk water, schedule well work, and track jobs online.</p>
+          <p className="text-sm text-muted-foreground">Order bulk water by bowser truck and track delivery requests online.</p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={onSubmit}>

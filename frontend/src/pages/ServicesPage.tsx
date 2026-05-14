@@ -1,108 +1,99 @@
-import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CalendarClock, Droplets, Hammer, Truck, Wrench } from "lucide-react";
-import { api, type Service, type ServiceCategory } from "@/lib/api";
+import { CalendarClock, CheckCircle2, Droplets, MapPin, Phone, Truck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-type VisibleCategory = ServiceCategory;
-
-const categories: Array<{ id: "all" | VisibleCategory; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "delivery", label: "Water delivery" },
-  { id: "borehole", label: "Well services" },
-  { id: "plumbing", label: "Plumbing" }
+const points = [
+  "Bulk tanker delivery for homes, estates, businesses, schools, and sites",
+  "Scheduled delivery date and time",
+  "Nairobi County and Kiambu County coverage",
+  "Dispatch confirmation by phone"
 ];
 
-const icons = {
-  delivery: Truck,
-  borehole: Hammer,
-  plumbing: Wrench
-};
-
-const categoryLabels: Record<VisibleCategory, string> = {
-  delivery: "delivery",
-  borehole: "well service",
-  plumbing: "plumbing"
-};
-
-const ServiceCard = ({ service }: { service: Service }) => {
-  const category = service.category as VisibleCategory;
-  const Icon = icons[category];
-  return (
-    <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
-      <Card className="h-full overflow-hidden shadow-sm">
-        <img className="h-52 w-full object-cover" src={service.imageUrl} alt={service.name} />
-        <CardContent className="p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 rounded-md bg-muted px-3 py-1 text-xs font-semibold capitalize text-primary">
-              <Icon className="h-4 w-4" />
-              {categoryLabels[category]}
-            </span>
-            <span className="font-bold text-primary">Request quote</span>
-          </div>
-          <h2 className="text-xl font-semibold">{service.name}</h2>
-          <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{service.description}</p>
-          <Link to={`/checkout/${service.id}`}>
-            <Button type="button" className="mt-5 w-full">
-              <CalendarClock className="h-4 w-4" />
-              Schedule Request
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-};
-
 export const ServicesPage = () => {
-  const [category, setCategory] = useState<"all" | VisibleCategory>("all");
   const servicesQuery = useQuery({ queryKey: ["services"], queryFn: () => api.services() });
-
-  const filtered = useMemo(() => {
-    const services = servicesQuery.data?.services ?? [];
-    return category === "all" ? services : services.filter((service) => service.category === category);
-  }, [category, servicesQuery.data?.services]);
+  const service = servicesQuery.data?.services[0];
 
   return (
     <main className="bg-muted/60 py-12">
       <div className="container-shell">
-        <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div>
+        <div className="grid gap-8 lg:grid-cols-[1fr_420px] lg:items-start">
+          <section>
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-primary">
-              <Droplets className="h-4 w-4" />
-              Online ordering
+              <Truck className="h-4 w-4" />
+              Bulk water delivery
             </p>
-            <h1 className="mt-2 text-4xl font-bold">Choose a water service</h1>
-            <p className="mt-3 max-w-2xl text-muted-foreground">
-              Select bulk water delivery, emergency supply, well drilling, pump installation, leak repair, or tank installation.
-              Submit your request online and our team will confirm dispatch details.
+            <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
+              Order clean water by bowser truck
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
+              A simple request form for bulk water delivery across Nairobi and Kiambu. Tell us where to deliver, when you
+              need it, and your estimated budget. Dispatch will confirm the final delivery details.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((item) => (
-              <Button
-                key={item.id}
-                type="button"
-                variant={category === item.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCategory(item.id)}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {points.map((point, index) => (
+                <motion.div
+                  key={point}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.4, delay: index * 0.06 }}
+                  className="flex items-start gap-3 rounded-lg border border-border bg-white p-4 shadow-sm"
+                >
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                  <span className="text-sm leading-6 text-slate-700">{point}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {service ? (
+                <Link to={`/checkout/${service.id}`}>
+                  <Button size="lg" type="button">
+                    <CalendarClock className="h-5 w-5" />
+                    Schedule Water Delivery
+                  </Button>
+                </Link>
+              ) : null}
+              <a href="tel:0782602171">
+                <Button size="lg" type="button" variant="outline">
+                  <Phone className="h-5 w-5" />
+                  Call Dispatch
+                </Button>
+              </a>
+            </div>
+          </section>
+
+          <Card className="overflow-hidden shadow-soft">
+            <img
+              className="h-72 w-full object-cover"
+              src="/images/water-bowser/water-bowser-bulk.jpg"
+              alt="Water bowser tanker truck"
+            />
+            <CardContent className="p-6">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
+                <Droplets className="h-4 w-4" />
+                One focused service
+              </div>
+              <h2 className="text-2xl font-bold">{service?.name ?? "Bulk Water Bowser Delivery"}</h2>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {service?.description ??
+                  "Clean bulk water delivered by water bowser truck for homes, estates, apartments, businesses, institutions, and construction sites."}
+              </p>
+              <div className="mt-5 rounded-lg bg-muted p-4 text-sm leading-6 text-slate-700">
+                <MapPin className="mb-2 h-5 w-5 text-primary" />
+                Serving Nairobi County and Kiambu County from Nairobi, Kenya.
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {servicesQuery.isLoading ? <p>Loading services...</p> : null}
-        {servicesQuery.isError ? <p className="text-red-600">Could not load services.</p> : null}
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
+        {servicesQuery.isLoading ? <p className="mt-6 text-muted-foreground">Loading delivery service...</p> : null}
+        {servicesQuery.isError ? <p className="mt-6 text-red-600">Could not load the delivery service.</p> : null}
       </div>
     </main>
   );

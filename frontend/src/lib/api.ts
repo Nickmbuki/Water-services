@@ -1,5 +1,5 @@
 export type Role = "customer" | "admin";
-export type ServiceCategory = "delivery" | "borehole" | "plumbing";
+export type ServiceCategory = "delivery";
 export type OrderStatus = "pending" | "paid" | "in_progress" | "completed";
 
 export type User = {

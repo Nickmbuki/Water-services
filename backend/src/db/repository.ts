@@ -90,103 +90,28 @@ export type CreateOrderInput = {
 const serviceSeed: Service[] = [
   {
     id: "11111111-1111-4111-8111-111111111111",
-    name: "Water Tanker Bulk Delivery",
-    description: "Scheduled bulk water bowser delivery for estates, construction sites, institutions, and businesses.",
+    name: "Bulk Water Bowser Delivery",
+    description: "Clean bulk water delivered by water bowser truck for homes, estates, apartments, businesses, institutions, and construction sites across Nairobi and Kiambu.",
     category: "delivery",
     basePrice: 6500,
     imageUrl: "/images/water-bowser/water-bowser-bulk.jpg"
-  },
-  {
-    id: "22222222-2222-4222-8222-222222222222",
-    name: "Emergency Water Supply",
-    description: "Rapid response clean water supply across Nairobi and Kiambu for urgent shortages.",
-    category: "delivery",
-    basePrice: 7500,
-    imageUrl: "/images/water-bowser/water-bowser-emergency.jpg"
-  },
-  {
-    id: "33333333-3333-4333-8333-333333333333",
-    name: "Home Water Delivery",
-    description: "Reliable domestic clean water delivery for homes, apartments, and residential compounds.",
-    category: "delivery",
-    basePrice: 2500,
-    imageUrl: "/images/water-bowser/water-bowser-home.jpg"
-  },
-  {
-    id: "44444444-4444-4444-8444-444444444444",
-    name: "Business Water Delivery",
-    description: "Commercial water delivery plans for offices, hotels, factories, schools, and retail operations.",
-    category: "delivery",
-    basePrice: 5000,
-    imageUrl: "/images/water-bowser/water-bowser-business.jpg"
-  },
-  {
-    id: "55555555-5555-4555-8555-555555555555",
-    name: "Well Drilling",
-    description: "Professional well drilling and digging with site assessment, lining guidance, water access planning, and handover.",
-    category: "borehole",
-    basePrice: 180000,
-    imageUrl: "/images/services/well-drilling.jpg"
-  },
-  {
-    id: "66666666-6666-4666-8666-666666666666",
-    name: "Well Inspection",
-    description: "Well inspection, water level checks, pump diagnostics, safety checks, and technical reports.",
-    category: "borehole",
-    basePrice: 12000,
-    imageUrl: "/images/services/well-inspection.jpg"
-  },
-  {
-    id: "77777777-7777-4777-8777-777777777777",
-    name: "Well Pump Installation",
-    description: "Submersible pump sizing, installation, control panels, cabling, and commissioning.",
-    category: "borehole",
-    basePrice: 45000,
-    imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "88888888-8888-4888-8888-888888888888",
-    name: "Well Rehabilitation",
-    description: "Restoration of low-yield and blocked wells through cleaning, lining support, flushing, and pump upgrades.",
-    category: "borehole",
-    basePrice: 35000,
-    imageUrl: "https://images.unsplash.com/photo-1574263867128-a3d5c1b1deaa?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "99999999-9999-4999-8999-999999999999",
-    name: "Home Plumbing",
-    description: "Domestic plumbing repairs, pipework, tanks, pumps, fixtures, and water pressure solutions.",
-    category: "plumbing",
-    basePrice: 3500,
-    imageUrl: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    name: "Commercial Plumbing",
-    description: "Plumbing installation and maintenance for commercial buildings and high-demand facilities.",
-    category: "plumbing",
-    basePrice: 15000,
-    imageUrl: "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-    name: "Leak Repair",
-    description: "Leak detection and repair for homes, compounds, storage tanks, pumps, and main lines.",
-    category: "plumbing",
-    basePrice: 3000,
-    imageUrl: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
-    name: "Tank Installation",
-    description: "Water tank supply, base preparation, installation, fittings, float valves, and overflow systems.",
-    category: "plumbing",
-    basePrice: 10000,
-    imageUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80"
   }
 ];
 
-const retiredServiceIds = new Set(["dddddddd-dddd-4ddd-8ddd-dddddddddddd"]);
+const retiredServiceIds = new Set([
+  "22222222-2222-4222-8222-222222222222",
+  "33333333-3333-4333-8333-333333333333",
+  "44444444-4444-4444-8444-444444444444",
+  "55555555-5555-4555-8555-555555555555",
+  "66666666-6666-4666-8666-666666666666",
+  "77777777-7777-4777-8777-777777777777",
+  "88888888-8888-4888-8888-888888888888",
+  "99999999-9999-4999-8999-999999999999",
+  "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
+]);
 
 const isVisibleService = (service: Service) => !retiredServiceIds.has(service.id);
 

@@ -306,7 +306,7 @@ export const CheckoutPage = () => {
               </div>
               <div className="space-y-2">
                 <Label>Instructions</Label>
-                <Textarea placeholder="Tank size, access notes, emergency details, well notes..." {...form.register("notes")} />
+                <Textarea placeholder="Tank size, access notes, delivery urgency, gate directions..." {...form.register("notes")} />
               </div>
               <Button type="submit" size="lg">
                 Submit Request
