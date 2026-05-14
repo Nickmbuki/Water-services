@@ -3,6 +3,7 @@ builder = "RAILPACK"
 buildCommand = "npm install && npm run build"
 
 [deploy]
+preDeployCommand = "npx drizzle-kit push"
 startCommand = "npm start"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
