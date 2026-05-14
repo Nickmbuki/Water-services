@@ -4,12 +4,12 @@ import { ArrowRight, Building2, CheckCircle2, Droplets, MapPin, Phone, Wrench } 
 import { Button } from "@/components/ui/button";
 
 const heroImage =
-  "https://images.unsplash.com/photo-1578496479763-c21c718af028?auto=format&fit=crop&w=2200&q=85";
+  "/images/water-bowser/water-bowser-truck.jpg";
 const wellImage = "/images/well-digging/well-digging-1.jpg";
 const plumbingImage =
   "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=1400&q=80";
 const deliveryImage =
-  "https://images.unsplash.com/photo-1578496479763-c21c718af028?auto=format&fit=crop&w=1400&q=80";
+  "/images/water-bowser/water-bowser-truck.jpg";
 
 const services = [
   {
@@ -33,7 +33,7 @@ export const HomePage = () => (
   <main>
     <section className="relative min-h-[82vh] overflow-hidden">
       <img className="absolute inset-0 h-full w-full object-cover" src={heroImage} alt="Water bowser truck delivering bulk clean water" />
-      <div className="absolute inset-0 bg-slate-950/60" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.82),rgba(15,23,42,0.48),rgba(2,6,23,0.16))]" />
       <div className="container-shell relative flex min-h-[82vh] items-center pb-16 pt-24">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -64,6 +64,19 @@ export const HomePage = () => (
               </Button>
             </Link>
           </div>
+          <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
+            {["Bulk bowser dispatch", "Custom M-Pesa payment", "Nairobi & Kiambu coverage"].map((item) => (
+              <motion.div
+                key={item}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.2 }}
+                className="rounded-md border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold backdrop-blur"
+              >
+                {item}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
@@ -74,12 +87,19 @@ export const HomePage = () => (
           ["24/7 Emergency Supply", "Fast response when your home, business, or site runs dry."],
           ["Certified Well Teams", "Well drilling, inspection, rehabilitation, and pump installation."],
           ["Nairobi Office Support", "Call 0782 602171 or 0797 608086 for dispatch coordination."]
-        ].map(([title, text]) => (
-          <div key={title} className="rounded-lg border border-border p-6">
+        ].map(([title, text], index) => (
+          <motion.div
+            key={title}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.45, delay: index * 0.08 }}
+            className="rounded-lg border border-border p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+          >
             <CheckCircle2 className="mb-4 h-7 w-7 text-accent" />
             <h2 className="text-lg font-semibold">{title}</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
@@ -96,8 +116,15 @@ export const HomePage = () => (
           </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-3">
-          {services.map((service) => (
-            <article key={service.title} className="overflow-hidden rounded-lg border border-border bg-white">
+          {services.map((service, index) => (
+            <motion.article
+              key={service.title}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: index * 0.08 }}
+              className="overflow-hidden rounded-lg border border-border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+            >
               <img className="h-56 w-full object-cover" src={service.image} alt={service.title} />
               <div className="p-6">
                 <h3 className="text-xl font-semibold">{service.title}</h3>
@@ -110,7 +137,7 @@ export const HomePage = () => (
                   ))}
                 </ul>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </div>

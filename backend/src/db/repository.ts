@@ -95,7 +95,7 @@ const serviceSeed: Service[] = [
     description: "Scheduled bulk water bowser delivery for estates, construction sites, institutions, and businesses.",
     category: "delivery",
     basePrice: 6500,
-    imageUrl: "https://images.unsplash.com/photo-1605106702734-205df224ecce?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
   },
   {
     id: "22222222-2222-4222-8222-222222222222",
@@ -103,7 +103,7 @@ const serviceSeed: Service[] = [
     description: "Rapid response clean water supply across Nairobi and Kiambu for urgent shortages.",
     category: "delivery",
     basePrice: 7500,
-    imageUrl: "https://images.unsplash.com/photo-1578496479763-c21c718af028?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
   },
   {
     id: "33333333-3333-4333-8333-333333333333",
@@ -111,7 +111,7 @@ const serviceSeed: Service[] = [
     description: "Reliable domestic clean water delivery for homes, apartments, and residential compounds.",
     category: "delivery",
     basePrice: 2500,
-    imageUrl: "https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
   },
   {
     id: "44444444-4444-4444-8444-444444444444",
@@ -119,7 +119,7 @@ const serviceSeed: Service[] = [
     description: "Commercial water delivery plans for offices, hotels, factories, schools, and retail operations.",
     category: "delivery",
     basePrice: 5000,
-    imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: "/images/water-bowser/water-bowser-truck.jpg"
   },
   {
     id: "55555555-5555-4555-8555-555555555555",

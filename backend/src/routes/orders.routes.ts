@@ -23,7 +23,6 @@ ordersRoutes.post(
     const input = orderInput.parse(req.body);
     const service = await repository.getService(input.serviceId);
     if (!service) throw new HttpError(404, "Service not found");
-    if (service.basePrice !== input.amount) throw new HttpError(400, "Order amount must match service price");
     const order = await repository.createOrderAfterPayment({
       userId: req.user.id,
       serviceId: input.serviceId,

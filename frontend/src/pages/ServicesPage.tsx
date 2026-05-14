@@ -5,7 +5,6 @@ import { CalendarClock, Droplets, Filter, Hammer, Truck, Wrench } from "lucide-r
 import { api, type Service, type ServiceCategory } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatKes } from "@/lib/utils";
 
 const categories: Array<{ id: "all" | ServiceCategory; label: string }> = [
   { id: "all", label: "All" },
@@ -40,7 +39,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
             <Icon className="h-4 w-4" />
             {categoryLabels[service.category]}
           </span>
-          <span className="font-bold text-primary">{formatKes(service.basePrice)}</span>
+          <span className="font-bold text-primary">Custom quote</span>
         </div>
         <h2 className="text-xl font-semibold">{service.name}</h2>
         <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{service.description}</p>

@@ -10,13 +10,14 @@ import { formatKes } from "@/lib/utils";
 type PaymentModalProps = {
   open: boolean;
   service: Service;
+  amount: number;
   orderReference: string;
   customerPhone: string;
   onClose: () => void;
   onPaid: (paymentSessionId: string) => Promise<void>;
 };
 
-export const PaymentModal = ({ open, service, orderReference, customerPhone, onClose, onPaid }: PaymentModalProps) => {
+export const PaymentModal = ({ open, service, amount, orderReference, customerPhone, onClose, onPaid }: PaymentModalProps) => {
   const [phone, setPhone] = useState(customerPhone);
   const [loading, setLoading] = useState<"mpesa" | "paypal" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export const PaymentModal = ({ open, service, orderReference, customerPhone, onC
     setLoading("mpesa");
     setMessage(null);
     try {
-      const payment = await api.payMpesa({ phone, amount: service.basePrice, orderReference });
+      const payment = await api.payMpesa({ phone, amount, orderReference });
       await onPaid(payment.paymentSessionId);
       setMessage("M-Pesa payment confirmed. Order created.");
     } catch (error) {
@@ -39,10 +40,10 @@ export const PaymentModal = ({ open, service, orderReference, customerPhone, onC
     setLoading("paypal");
     setMessage(null);
     try {
-      const created = await api.createPayPalOrder({ amount: service.basePrice, orderReference });
+      const created = await api.createPayPalOrder({ amount, orderReference });
       const paypalOrderId = created.paypalOrderId ?? created.id;
       if (!paypalOrderId) throw new Error("PayPal order was not created");
-      const captured = await api.capturePayPal({ paypalOrderId, amount: service.basePrice, orderReference });
+      const captured = await api.capturePayPal({ paypalOrderId, amount, orderReference });
       await onPaid(captured.paymentSessionId);
       setMessage("PayPal payment confirmed. Order created.");
     } catch (error) {
@@ -58,7 +59,7 @@ export const PaymentModal = ({ open, service, orderReference, customerPhone, onC
         <div className="rounded-md bg-muted p-4">
           <p className="text-sm text-muted-foreground">Service</p>
           <p className="font-semibold">{service.name}</p>
-          <p className="mt-1 text-2xl font-bold text-primary">{formatKes(service.basePrice)}</p>
+          <p className="mt-1 text-2xl font-bold text-primary">{formatKes(amount)}</p>
         </div>
 
         <div className="space-y-2">

@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { formatKes } from "@/lib/utils";
 import { PaymentModal } from "@/components/payment/PaymentModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +16,9 @@ import { Textarea } from "@/components/ui/textarea";
 const schema = z.object({
   location: z.string().min(3),
   scheduledDate: z.string().min(1),
+  amount: z.string().min(1, "Enter the amount you want to pay").refine((value) => Number(value) > 0, {
+    message: "Amount must be greater than zero"
+  }),
   notes: z.string().optional()
 });
 
@@ -31,7 +33,7 @@ export const CheckoutPage = () => {
   const service = serviceQuery.data?.service;
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { location: "", scheduledDate: "", notes: "" }
+    defaultValues: { location: "", scheduledDate: "", amount: "", notes: "" }
   });
 
   const orderReference = useMemo(() => `WS-${Date.now()}`, []);
@@ -43,9 +45,10 @@ export const CheckoutPage = () => {
   const createOrder = async (paymentSessionId: string) => {
     const values = form.getValues();
     if (!service) return;
+    const amount = Number(values.amount);
     const order = await api.createOrder({
       serviceId: service.id,
-      amount: service.basePrice,
+      amount,
       location: values.notes ? `${values.location}. Notes: ${values.notes}` : values.location,
       scheduledDate: new Date(values.scheduledDate).toISOString(),
       paymentSessionId
@@ -76,6 +79,11 @@ export const CheckoutPage = () => {
                 <Input type="datetime-local" {...form.register("scheduledDate")} />
               </div>
               <div className="space-y-2">
+                <Label>Amount to pay</Label>
+                <Input type="number" min="1" step="1" placeholder="Enter custom amount in KES" {...form.register("amount")} />
+                <p className="text-xs text-muted-foreground">Pay based on the volume, distance, urgency, or service scope agreed with dispatch.</p>
+              </div>
+              <div className="space-y-2">
                 <Label>Instructions</Label>
                 <Textarea placeholder="Tank size, access notes, emergency details, well notes..." {...form.register("notes")} />
               </div>
@@ -93,8 +101,8 @@ export const CheckoutPage = () => {
               <h1 className="text-2xl font-bold">{service.name}</h1>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{service.description}</p>
               <div className="mt-5 rounded-md bg-primary/10 p-4">
-                <p className="text-sm text-primary">Amount due before order creation</p>
-                <p className="text-3xl font-bold text-primary">{formatKes(service.basePrice)}</p>
+                <p className="text-sm text-primary">Custom amount</p>
+                <p className="mt-1 text-sm text-slate-700">Enter the agreed amount during checkout before payment.</p>
               </div>
             </CardContent>
           </Card>
@@ -110,6 +118,7 @@ export const CheckoutPage = () => {
       <PaymentModal
         open={paymentOpen}
         service={service}
+        amount={Number(form.getValues("amount"))}
         orderReference={orderReference}
         customerPhone={user?.phone ?? ""}
         onClose={() => setPaymentOpen(false)}

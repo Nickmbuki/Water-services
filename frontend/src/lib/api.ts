@@ -87,7 +87,7 @@ export const api = {
   services: () => request<{ services: Service[] }>("/services"),
   service: (id: string) => request<{ service: Service }>(`/services/${id}`),
   payMpesa: (input: { phone: string; amount: number; orderReference: string }) =>
-    request<{ paymentSessionId: string; status: string; message?: string }>("/payments/mpesa/stkpush", {
+    request<{ paymentSessionId: string; status: string; message?: string; mode?: string }>("/payments/mpesa/stkpush", {
       method: "POST",
       body: JSON.stringify(input)
     }),
