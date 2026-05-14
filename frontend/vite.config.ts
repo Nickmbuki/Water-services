@@ -11,5 +11,12 @@ export default defineConfig({
   },
   server: {
     port: 5173
+  },
+  preview: {
+    allowedHosts: [
+      "efficient-liberation-production.up.railway.app",
+      "water-services-production.up.railway.app",
+      ".up.railway.app"
+    ]
   }
 });
