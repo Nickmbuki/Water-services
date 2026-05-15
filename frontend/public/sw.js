@@ -1,4 +1,4 @@
-const CACHE_NAME = "water-services-app-v1";
+const CACHE_NAME = "water-services-app-v2";
 const APP_SHELL = ["/", "/manifest.webmanifest", "/app-icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -15,17 +15,36 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
 
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("/", copy));
+          return response;
+        })
+        .catch(() => caches.match("/") || Response.error())
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).catch((error) => {
-        if (request.mode === "navigate") return caches.match("/");
-        throw error;
-      });
-    })
+    fetch(request)
+      .then((response) => {
+        if (response.ok && new URL(request.url).origin === self.location.origin) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request).then((cached) => cached || Response.error()))
   );
 });
