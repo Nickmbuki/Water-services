@@ -1,5 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
-import { Droplets, LogOut, Phone } from "lucide-react";
+import { LogOut, MessageCircle, Phone, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 
@@ -13,11 +13,11 @@ export const Header = () => {
       <div className="container-shell flex min-h-20 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 font-bold text-primary">
           <span className="grid h-10 w-10 place-items-center rounded-md bg-primary text-white">
-            <Droplets className="h-6 w-6" />
+            <Waves className="h-6 w-6" />
           </span>
           <span className="leading-tight">
-            Nairobi Kiambu
-            <span className="block text-xs font-semibold text-slate-500">Water Services</span>
+            Bowser Water
+            <span className="block text-xs font-semibold text-slate-500">Nairobi & Kiambu</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
@@ -37,6 +37,15 @@ export const Header = () => {
           <a className="hidden items-center gap-2 text-sm font-semibold text-slate-700 lg:flex" href="tel:0782602171">
             <Phone className="h-4 w-4 text-primary" />
             0782 602171
+          </a>
+          <a
+            className="hidden h-9 items-center gap-2 rounded-md bg-accent px-3 text-sm font-semibold text-white transition hover:bg-accent/90 sm:inline-flex"
+            href="https://wa.me/254782602171"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <MessageCircle className="h-4 w-4" />
+            WhatsApp
           </a>
           {user ? (
             <Button type="button" variant="outline" size="sm" onClick={logout}>

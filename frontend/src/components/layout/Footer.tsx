@@ -1,4 +1,4 @@
-import { Droplets, MapPin, Phone } from "lucide-react";
+import { MapPin, MessageCircle, Phone, Waves } from "lucide-react";
 
 export const Footer = () => (
   <footer className="bg-slate-950 text-white">
@@ -6,9 +6,9 @@ export const Footer = () => (
       <div>
         <div className="mb-4 flex items-center gap-3 font-bold">
           <span className="grid h-10 w-10 place-items-center rounded-md bg-primary">
-            <Droplets className="h-6 w-6" />
+            <Waves className="h-6 w-6" />
           </span>
-          Nairobi Kiambu Water Services
+          Bowser Water Delivery
         </div>
         <p className="max-w-md text-sm leading-6 text-slate-300">
           Clean bulk water delivery by bowser truck for homes, estates, institutions, businesses, and construction sites.
@@ -35,6 +35,10 @@ export const Footer = () => (
         <a className="mt-2 flex items-center gap-2 text-sm text-slate-100" href="tel:0797608086">
           <Phone className="h-4 w-4 text-secondary" />
           0797 608086
+        </a>
+        <a className="mt-2 flex items-center gap-2 text-sm text-slate-100" href="https://wa.me/254782602171" target="_blank" rel="noreferrer">
+          <MessageCircle className="h-4 w-4 text-secondary" />
+          WhatsApp dispatch
         </a>
       </div>
     </div>
