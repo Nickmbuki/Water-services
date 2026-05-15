@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { InstallAppPrompt } from "@/components/layout/InstallAppPrompt";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { AccountPage } from "@/pages/AccountPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
@@ -44,5 +45,6 @@ export const App = () => (
       />
     </Routes>
     <Footer />
+    <InstallAppPrompt />
   </>
 );
